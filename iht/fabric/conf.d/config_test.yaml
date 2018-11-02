@@ -29,41 +29,41 @@ client:
 
   # Global configuration for peer, event service and orderer timeouts
   # if this this section is omitted, then default values will be used (same values as below)
-#  peer:
-#    timeout:
-#      connection: 10s
-#      response: 180s
-#      discovery:
-#        # Expiry period for discovery service greylist filter
-#        # The channel client will greylist peers that are found to be offline
-#        # to prevent re-selecting them in subsequent retries.
-#        # This interval will define how long a peer is greylisted
-#        greylistExpiry: 10s
-#  eventService:
-#    # Event service type (optional). If not specified then the type is automatically
-#    # determined from channel capabilities.
-#    type: (deliver|eventhub)
+  peer:
+   timeout:
+     connection: 10s
+     response: 180s
+     discovery:
+       # Expiry period for discovery service greylist filter
+       # The channel client will greylist peers that are found to be offline
+       # to prevent re-selecting them in subsequent retries.
+       # This interval will define how long a peer is greylisted
+       greylistExpiry: 10s
+   eventService:
+   # Event service type (optional). If not specified then the type is automatically
+   # determined from channel capabilities.
+   type: (deliver|eventhub)
     # the below timeouts are commented out to use the default values that are found in
     # "pkg/fab/endpointconfig.go"
     # the client is free to override the default values by uncommenting and resetting
     # the values as they see fit in their config file
-#    timeout:
-#      connection: 15s
-#      registrationResponse: 15s
-#  orderer:
-#    timeout:
-#      connection: 15s
-#      response: 15s
-#  global:
-#    timeout:
-#      query: 180s
-#      execute: 180s
-#      resmgmt: 180s
-#    cache:
-#      connectionIdle: 30s
-#      eventServiceIdle: 2m
-#      channelConfig: 30m
-#      channelMembership: 30s
+   timeout:
+      connection: 15s
+      registrationResponse: 15s
+   orderer:
+      timeout:
+        connection: 15s
+        response: 15s
+   global:
+      timeout:
+        query: 180s
+        execute: 180s
+        resmgmt: 180s
+      cache:
+        connectionIdle: 30s
+        eventServiceIdle: 2m
+        channelConfig: 30m
+        channelMembership: 30s
 
   # Root of the MSP directories with keys and certs.
   cryptoconfig:

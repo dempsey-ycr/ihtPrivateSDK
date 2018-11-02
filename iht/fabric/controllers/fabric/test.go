@@ -21,7 +21,7 @@ type TestInfo struct {
 // NewTestInfo new a testInfo
 func NewTestInfo() *TestInfo {
 	return &TestInfo{
-		chaincodeID: "app",
+		chaincodeID: "byfn",
 	}
 }
 
@@ -48,6 +48,7 @@ type InvokeInfo struct {
 
 // Query chaincode query test
 func (t *TestInfo) Query(c *gin.Context) {
+
 	fcn := c.Query("func")
 	key := c.Query("key")
 
@@ -59,39 +60,43 @@ func (t *TestInfo) Query(c *gin.Context) {
 
 	res, err := sdk.Query(req)
 	if err != nil {
-		lib.WriteSDK(c, 40002, "", nil)
+		lib.WriteError(c, 40002, err.Error(), nil)
 		return
 	}
 
-	v := &InvokeInfo{}
-	dis, err := sdk.DisposalQuery(res)
-	if err != nil {
-		lib.WriteString(c, 40002, nil)
+	payload, _ := sdk.DisposalQuery(res)
+	if payload == nil {
+		logging.Error("DisposalQuery error...")
+		lib.WriteError(c, 40002, "", nil)
 		return
 	}
 
-	if err = json.Unmarshal(dis.Response.Payload, v); err != nil {
-		logging.Error("%v", err)
-		lib.WriteSDK(c, 40002, "", nil)
-		return
+	var metadata map[string]interface{} // 把[]byte按照其原来结构解析出来，不关心其类型
+	data := (payload.Payload).([]byte)
+	if len(data) != 0 {
+		if err = json.Unmarshal(data, &metadata); err != nil {
+			logging.Error("json.Unmarshal:%v", err)
+			payload.Code = 40002
+			lib.WriteJSON(c, payload.FabricPrivate)
+			return
+		}
+		payload.Payload = &metadata
 	}
 
-	lib.WriteSDK(c, dis.Response.Status, dis.Response.Message, v)
+	lib.WriteJSON(c, payload)
 }
 
 // Invoke chaincode invoke test
 func (t *TestInfo) Invoke(c *gin.Context) {
 	r := &ReqInvokeTest{}
 	if code, err := lib.RecvAndUnmarshalJSON(c, 1024, r); err != nil {
-		logging.Error("post json %v", err)
-		lib.WriteString(c, code, nil)
+		lib.WriteError(c, code, err.Error(), nil)
 		return
 	}
 
 	value, err := json.Marshal(r.Value)
 	if err != nil {
-		logging.Error("Marshal: %v", err)
-		lib.WriteString(c, 40002, nil)
+		lib.WriteError(c, 40002, err.Error(), nil)
 		return
 	}
 	req := channel.Request{
@@ -101,15 +106,28 @@ func (t *TestInfo) Invoke(c *gin.Context) {
 	}
 	res, err := sdk.Invoke(req)
 	if err != nil {
-		lib.WriteString(c, 40002, nil)
+		lib.WriteError(c, 40002, err.Error(), nil)
 		return
 	}
 
-	dis, err := sdk.Disposal(res)
-	if err != nil {
-		lib.WriteString(c, 40002, nil)
+	payload, _ := sdk.Disposal(res)
+	if payload == nil {
+		logging.Error("DisposalQuery error...")
+		lib.WriteError(c, 40002, "", nil)
 		return
 	}
 
-	lib.WriteSDK(c, dis.Response.Status, dis.Response.Message, string(dis.Response.Payload))
+	var metadata map[string]interface{} // 把[]byte按照其原来结构解析出来，不关心其类型
+	data := (payload.Payload).([]byte)
+	if len(data) != 0 {
+		if err = json.Unmarshal(data, &metadata); err != nil {
+			logging.Error("json.Unmarshal:%v", err)
+			payload.Code = 40002
+			lib.WriteJSON(c, payload.FabricPrivate)
+			return
+		}
+		payload.Payload = &metadata
+	}
+
+	lib.WriteJSON(c, payload)
 }

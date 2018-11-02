@@ -5,7 +5,7 @@ import (
 	"ihtPrivateSDK/share/lib"
 
 	sdk "ihtPrivateSDK/iht/fabric/models/fabric_sdk"
-	pro "protobuf/projects/go/protocol"
+	pro "protobuf/projects/go/protocol/asset"
 
 	"ihtPrivateSDK/share/logging"
 
@@ -47,7 +47,7 @@ func (m *AssetManages) POST(c *gin.Context) {
 	}
 
 	req := channel.Request{
-		ChaincodeID: "app",
+		ChaincodeID: "byfn",
 		Fcn:         asset.Fun,
 		Args:        [][]byte{[]byte(asset.Key), value},
 	}
@@ -62,13 +62,13 @@ func (m *AssetManages) POST(c *gin.Context) {
 		TxCode: res.TxValidationCode,
 	}
 
-	dis, err := sdk.Disposal(res)
+	_, err = sdk.Disposal(res)
 	if err != nil {
 		lib.WriteString(c, 40002, nil)
 		return
 	}
 
-	if err = json.Unmarshal(dis.Response.Payload, v); err != nil {
+	if err = json.Unmarshal(nil, v); err != nil {
 		logging.Error("%v", err)
 		lib.WriteString(c, 40002, nil)
 		return
@@ -83,7 +83,7 @@ func (m *AssetManages) GET(c *gin.Context) {
 	key := c.Query("key")
 
 	req := channel.Request{
-		ChaincodeID: "app",
+		ChaincodeID: "byfn",
 		Fcn:         fcn,
 		Args:        [][]byte{[]byte(key)},
 	}
@@ -94,21 +94,11 @@ func (m *AssetManages) GET(c *gin.Context) {
 		return
 	}
 
-	v := &Response{
-		Data:   new(pro.AssetInfo),
-		TxID:   string(res.TransactionID),
-		TxCode: res.TxValidationCode,
-	}
-	dis, err := sdk.DisposalQuery(res)
+	response, err := sdk.DisposalQuery(res)
 	if err != nil {
 		lib.WriteString(c, 40002, nil)
 		return
 	}
 
-	if err = json.Unmarshal(dis.Response.Payload, v); err != nil {
-		logging.Error("%v", err)
-		lib.WriteString(c, 40002, nil)
-		return
-	}
-	lib.WriteJSON(c, v)
+	lib.WriteJSON(c, response)
 }

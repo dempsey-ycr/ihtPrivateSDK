@@ -2,12 +2,13 @@ package fabric_sdk
 
 import (
 	"errors"
-
 	"ihtPrivateSDK/share/logging"
 
 	"github.com/hyperledger/fabric-sdk-go/pkg/client/channel"
 	"github.com/hyperledger/fabric-sdk-go/pkg/common/errors/retry"
-	"github.com/hyperledger/fabric-sdk-go/pkg/common/providers/fab"
+
+	. "ihtPrivateSDK/iht/fabric/models"
+	pb "protobuf/projects/go/protocol/basic"
 )
 
 // Query query chaincode
@@ -22,20 +23,41 @@ func Query(request channel.Request) (*channel.Response, error) {
 		logging.Error("Query: %v", err)
 		return nil, err
 	}
-	logging.Info("TransactionID: %s", response.TransactionID)
-	logging.Info("TxValidationCode: %d", response.TxValidationCode)
-
 	// Notifier(client, getEventID())
 	return &response, nil
 }
 
 // DisposalQuery Get accurate data by processing
-func DisposalQuery(response *channel.Response) (*fab.TransactionProposalResponse, error) {
-	if response.ChaincodeStatus == 200 && len(response.Responses) == 1 {
-		return (response.Responses)[0], nil
+func DisposalQuery(response *channel.Response) (*Response, error) {
+	var endorsements []*pb.Endorsement
+	for _, v := range response.Responses {
+		logging.Debug(v.Endorser)
+		endorser := &pb.Endorsement{
+			Status:      v.Status,
+			EndorseAddr: v.Endorser,
+			Signature:   v.Endorsement.Signature,
+			Version:     v.Version,
+			// v.Endorsement.Endorser 背书证书
+		}
+		if v.Timestamp != nil {
+			endorser.Timestamp = v.Timestamp.Seconds
+		}
+		endorsements = append(endorsements, endorser)
 	}
-	if response.ChaincodeStatus == 200 && len(response.Responses) > 1 {
-		return nil, errors.New("Query: Return too much response.Responses. But In theory, It's not to be there")
+
+	private := &pb.FabricPrivate{
+		ChaincodeStatus:  response.ChaincodeStatus,
+		TransactionID:    string(response.TransactionID),
+		TxValidationCode: int32(response.TxValidationCode),
+		Endorsement:      endorsements,
 	}
-	return (response.Responses)[0], errors.New("Query: Return too little response.Responses")
+
+	res := &Response{
+		Code:          (response.Responses)[0].Response.Status,
+		Message:       (response.Responses)[0].Response.Message,
+		Payload:       (response.Responses)[0].Response.Payload,
+		FabricPrivate: private,
+	}
+
+	return res, nil
 }

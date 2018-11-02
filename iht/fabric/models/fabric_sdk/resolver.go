@@ -17,7 +17,7 @@ const (
 	orgAdmin       = "Admin"
 	ordererOrgName = "peerOrg1"
 	// ordererOrgName = "Org1MSP"
-	chaincodeID = "app"
+	chaincodeID = "byfn"
 
 	configPath = "./conf.d/config_test.yaml"
 )
