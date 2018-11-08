@@ -11,6 +11,13 @@ import (
 	pb "protobuf/projects/go/protocol/basic"
 )
 
+// RequestMetadata ...
+type RequestMetadata struct {
+	Method   string      `json:"method"`
+	ObjType  int         `json:"objType"`
+	MetaData interface{} `json:"meta"` // 在这里 我对它漠不关心
+}
+
 // Response ...
 type Response struct {
 	Code          int32             `json:"code"`

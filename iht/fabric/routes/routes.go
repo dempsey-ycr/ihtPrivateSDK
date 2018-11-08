@@ -1,15 +1,15 @@
 package routes
 
 import (
-	"ihtPrivateSDK/iht/fabric/controllers/fabric"
+	"ihtPrivateSDK/iht/fabric/controllers/basal"
 
 	"github.com/gin-gonic/gin"
 )
 
 func Register(engine *gin.Engine) {
-	engine.GET("/", fabric.NewTestInfo().GET)
+	engine.GET("/", basal.NewTestInfo().GET)
 
-	rg := engine.Group("/api/sdk")
+	rg := engine.Group("/api")
 
 	// publish
 	RegPublish(rg)

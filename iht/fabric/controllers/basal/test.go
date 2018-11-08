@@ -1,4 +1,4 @@
-package fabric
+package basal
 
 import (
 	"encoding/json"
@@ -35,7 +35,7 @@ func (t *TestInfo) GET(c *gin.Context) {
 // ReqInvokeTest request invoke test
 type ReqInvokeTest struct {
 	Key   string     `json:"key"`
-	Fun   string     `json:"fun"`
+	Fun   string     `json:"method"`
 	Value InvokeInfo `json:"value"`
 }
 
