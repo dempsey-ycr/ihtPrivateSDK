@@ -28,6 +28,7 @@ func NewMetaHandle() *MetadataHandle {
 func (m *MetadataHandle) Insert(c *gin.Context) {
 	m.chaincodeID = c.Query("chaincodeID")
 	m.version = c.Query("version")
+	method := "Insert"
 
 	metaReq := &RequestMetadata{}
 	if code, err := lib.RecvAndUnmarshalJSON(c, 3072, metaReq); err != nil {
@@ -44,7 +45,7 @@ func (m *MetadataHandle) Insert(c *gin.Context) {
 
 	reqCC := channel.Request{
 		ChaincodeID: m.chaincodeID,
-		Fcn:         metaReq.Method,
+		Fcn:         method,
 		Args:        [][]byte{[]byte(strconv.Itoa(metaReq.ObjType)), value},
 	}
 	res, err := sdk.Invoke(reqCC)

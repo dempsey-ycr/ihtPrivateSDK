@@ -17,6 +17,7 @@ import (
 func (m *MetadataHandle) ReadSingle(c *gin.Context) {
 	m.chaincodeID = c.Query("chaincodeID")
 	m.version = c.Query("version")
+	method := "ReadDesc"
 
 	metaReq := &RequestMetadata{}
 	if code, err := lib.RecvAndUnmarshalJSON(c, 1024, metaReq); err != nil {
@@ -32,7 +33,7 @@ func (m *MetadataHandle) ReadSingle(c *gin.Context) {
 
 	req := channel.Request{
 		ChaincodeID: m.chaincodeID,
-		Fcn:         metaReq.Method,
+		Fcn:         method,
 		Args:        [][]byte{[]byte(strconv.Itoa(metaReq.ObjType)), value},
 	}
 

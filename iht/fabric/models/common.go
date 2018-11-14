@@ -13,7 +13,6 @@ import (
 
 // RequestMetadata ...
 type RequestMetadata struct {
-	Method   string      `json:"method"`
 	ObjType  int         `json:"objType"`
 	MetaData interface{} `json:"meta"` // 在这里 我对它漠不关心
 }

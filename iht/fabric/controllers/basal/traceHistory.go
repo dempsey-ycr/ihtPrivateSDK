@@ -17,6 +17,7 @@ import (
 func (m *MetadataHandle) TraceHistory(c *gin.Context) {
 	m.chaincodeID = c.Query("chaincodeID")
 	m.version = c.Query("version")
+	method := "TraceHistory"
 
 	metaReq := &RequestMetadata{}
 	if code, err := lib.RecvAndUnmarshalJSON(c, 3072, metaReq); err != nil {
@@ -33,7 +34,7 @@ func (m *MetadataHandle) TraceHistory(c *gin.Context) {
 
 	reqCC := channel.Request{
 		ChaincodeID: m.chaincodeID,
-		Fcn:         metaReq.Method,
+		Fcn:         method,
 		Args:        [][]byte{[]byte(strconv.Itoa(metaReq.ObjType)), value},
 	}
 	res, err := sdk.Invoke(reqCC)
