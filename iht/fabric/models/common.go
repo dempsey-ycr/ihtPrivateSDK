@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"ihtPrivateSDK/share/logging"
-	pb "protobuf/projects/go/protocol/basic"
+	pb "protobuf/projects/go/protocol/common"
 )
 
 // RequestMetadata ...

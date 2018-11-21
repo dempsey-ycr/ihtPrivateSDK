@@ -9,7 +9,7 @@ import (
 	"github.com/hyperledger/fabric-sdk-go/pkg/common/errors/retry"
 
 	. "ihtPrivateSDK/iht/fabric/models"
-	pb "protobuf/projects/go/protocol/basic"
+	pb "protobuf/projects/go/protocol/common"
 )
 
 // Invoke Operate chaincode
