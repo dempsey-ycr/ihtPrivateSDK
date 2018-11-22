@@ -31,7 +31,7 @@ func (m *MetadataHandle) Insert(c *gin.Context) {
 	method := "Insert"
 
 	metaReq := &RequestMetadata{}
-	if code, err := lib.RecvAndUnmarshalJSON(c, 3072, metaReq); err != nil {
+	if code, err := lib.RecvAndUnmarshalJSON(c, 5000, metaReq); err != nil {
 		lib.WriteError(c, code, err.Error(), nil)
 		return
 	}
